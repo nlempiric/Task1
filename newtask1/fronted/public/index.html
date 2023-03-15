@@ -1,0 +1,69 @@
+
+<html lang="en">
+<head>
+   
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.0.3/ethers.min.js" type="application/javascript"></script> -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>  
+    <title>Document</title>
+    <style>
+        .btn
+        {
+            width:300px;
+            font-size: 18px;
+        }
+        .btn:hover
+        {
+            opacity: 0.8;
+            
+        }
+        #d1
+        {
+            width: 540px;
+            height: 280px;
+            border: 1px solid black;
+            margin-top: 30px;
+            padding: 25px;  
+            background-color:rgb(196, 209, 222); 
+        }
+     
+        h3
+        {
+            font-weight: bold;
+        
+        }
+        #b1
+        {
+            width: 540px;
+            background-color: rgb(196, 209, 222);
+            border: 1px solid black;
+        }
+    </style>
+    <script type="module">
+        import {cw} from './index.js'
+
+            document.getElementById('b1').onclick=function()
+            {
+                cw();
+            };
+   </script>
+</head>
+<body>
+    <center>
+        <div id="d1">
+            <h3>Mint And Buy token</h3><br>
+            <button type="button" class="btn btn-default" onclick="window.location.href = './mint.html';">Mint</button>
+            <br><br>
+            <button type="button" class="btn btn-default" onclick="window.location.href = './buytoken.html';">Buy Token</button>
+        </div><br>
+        <div>
+            <button type="button"  id="b1" class="btn btn-default">Connect Wallet</button>
+        </div>
+    </center>
+</body>
+</html>

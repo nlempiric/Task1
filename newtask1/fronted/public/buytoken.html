@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+
+    <title>Document</title>
+<style>
+
+
+#d1
+{
+    border: 1px solid black;
+    width: 540px;
+    height: 540px;
+    margin-top: 30px;
+    background-color:rgb(196, 209, 222); 
+     
+}
+#d2
+{
+
+    border: 1px solid black;
+    width: 540px;
+    height: 230px;
+    margin-top: 30px;
+    background-color:rgb(196, 209, 222); 
+}
+.btn
+{
+    width: 369px;
+    font-size: 16px;
+    /* background-color:t;  */
+}
+.btn:hover
+{
+    opacity: 0.8;
+    
+}
+.divh1
+{
+    margin-top: -10px;
+    background-color: rgb(127, 155, 179); 
+
+}
+label
+{
+    font-size: 16px;
+}
+
+
+#divh2
+{
+    margin-top: -10px;
+    background-color: rgb(127, 155, 179);
+}
+.sidenav {
+  height: 100%;
+  width: 230px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: rgb(196, 209, 222);
+  overflow-x: hidden;
+}
+
+
+
+.main {
+    justify-content: center;
+  /* margin-left: 160px; Same as the width of the sidenav */
+  
+} 
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+.sidenav  button
+{
+    width: 230px;
+    border: none;
+    /* height: 30px;; */
+    font-size: 20px;
+    padding: 15px;
+    text-align: left;
+    margin-top: 0px;
+    background-color: rgb(196, 209, 222);
+
+    
+}
+.sidenav button:hover
+{
+    background-color: rgb(127, 155, 179);
+    color: white;
+}
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+.collapse {
+  /* padding: 0 18px; */
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+.liclass{
+    font-size: 20px;
+
+    list-style-type: none;
+    background-color: rgb(196, 209, 222);
+    width: 230px;
+    background-color: white;
+    padding-left: 18px;
+    padding-top: 13px;
+    padding-bottom: 13px;;
+
+}
+</style>
+
+<!-- <script src="./buytoken.js"></script> -->
+<script type="module">
+    import {claimtra} from "./buytoken.js";
+    import {buycontract,contract} from "./index.js";
+   
+  
+    document.body.onload = function() 
+    {
+        try{
+        if (typeof window.ethereum !== "undefined") 
+        {
+            ethereum
+            .request({ method: "eth_accounts" })
+            .then((accounts) => {
+                const account = accounts[0]
+        
+                console.log('connected account------',account)
+                document.getElementById('add').setAttribute('value',account);
+            },
+            ()=>
+            {
+                console.log('user rejected the request-----');
+            })
+        } 
+        }
+        catch(error)
+        {
+        console.log('error:---',error);
+        }
+    };
+   
+    document.getElementById('b1').onclick=async function()
+    {
+        // ethereum.on('disconnect', handler: (error: ProviderRpcError) => void);
+        if(ethereum)
+        {
+
+            const account = window.ethereum.request({
+                method: 'wallet_requestPermissions',
+                params: [{
+                    eth_accounts: {},
+                }],
+               }).then((permissions) => {
+            const accountsPermission = permissions.find(
+              (permission) => permission.parentCapability === 'eth_accounts'
+            );
+            if (accountsPermission) {
+              console.log('account address--------',accountsPermission.caveats[0].value[0],'eth_accounts permission successfully requested!');
+              const ab=accountsPermission.caveats[0].value[0];
+              document.getElementById('add').setAttribute('value',ab);
+
+            }
+            }).catch((error) => {
+                if (error.code === 4001) {
+                    // EIP-1193 userRejectedRequest error
+                   
+                } else {
+                    alert(error.message);
+                    console.error('error-----',error);
+                }
+             }); 
+        }   
+    };
+
+    document.getElementById('buybtn').onclick=async function()
+    {
+        const ad=document.getElementById('add').value;
+        const tb=document.getElementById('ta').value;
+        console.log('address---------',ad)
+        console.log('ethers---------',tb)
+        try
+        {
+            const value={value:ethers.utils.parseEther(`${tb}`)};
+            const value1 = Number(value);
+            console.log('----value----------',value);
+            // console.log('----value----------',value1);
+            const buytoken=await buycontract.transfer(value);
+            // console.log('----value----------',Number(buytoken));
+            const a=await buytoken.wait();
+            console.log('transaction is done');
+            console.log('=-=-=-=-=-=-=-',a.events);
+            // console.log('id----',buycontract.orderId)
+            // console.log('-----------------', buycontract.orderId());   
+            let orderid=Number(a.events[0].args.orderId);
+            console.log('-----------------', orderid);
+            document.getElementById('or').setAttribute('value',orderid);
+            // return orderid;    
+        }
+        catch(error)
+        {
+            console.log('error',error);
+            alert(error.message);
+        }
+        // const q=await buytokenunc(tb).wait;
+        // buytokenunc(tb);
+        // orderid=Number(a.events[0].args.orderId)
+        // console.log('-------',orderid);
+        // document.getElementById('or').setAttribute('value',orderid);
+    }
+
+    document.getElementById('clbtn').onclick=function()
+    {
+        // checkbal();
+        // console.log('balanceeeee---------',abal)
+        const o=document.getElementById('or').value
+        claimtra(o);
+
+    }
+
+
+    document.getElementById('cbbtn').onclick= async function()
+    {
+        // checkbal();
+        // console.log('balanceeeee---------',abal)
+       
+
+        const c=await buycontract.checktokenbalance();
+        // await c.wait();
+        let abal=Number(c)
+        console.log('balanceeeeeeee',Number(c));
+        document.getElementById('b').innerHTML=abal;
+        
+    }
+
+
+    document.getElementById('TokenBal').onclick=async function()
+    {
+        const balan = await contract.balanceOf(buycontract.address); 
+        const tbal = Number(balan);
+        console.log('-------tb---',tbal);
+        document.getElementById('tokenbal').innerHTML=tbal;
+        
+    }
+
+    document.getElementById('ui').onclick=async function()
+    {
+        const d=document.getElementById('demo2');
+        while (d.hasChildNodes())
+        {
+            d.removeChild(d.firstChild)
+        }
+        const i=await buycontract.unclaimed();
+     
+        const a=[];
+        for(let j=0;j<i.length;j++)
+        {   
+            console.log('niiii',i[j]);
+            if(i[j]==false)
+            {
+                a.push(j+1);
+            }
+            
+        }
+        console.log('-------------a',a);
+        for(let k=0;k<a.length;k++)
+        {
+            
+            let litag = document.createElement("li");
+            litag.setAttribute('class',"liclass");
+            // litag.className="liclass";
+            litag.textContent=a[k];
+            d.append(litag);
+        }
+    }
+    document.getElementById('b1').onclick=async function()
+     {
+        try{
+            if(ethereum)
+            {
+
+                const account = window.ethereum.request({
+                    method: 'wallet_requestPermissions',
+                    params: [{
+                        eth_accounts: {},
+                    }],
+                }).then((permissions) => {
+                const accountsPermission = permissions.find(
+                (permission) => permission.parentCapability === 'eth_accounts'
+                );
+                if (accountsPermission) {
+                console.log('account address--------',accountsPermission.caveats[0].value[0],'eth_accounts permission successfully requested!');
+                const ab=accountsPermission.caveats[0].value[0];
+                document.getElementById('add').setAttribute('value',ab);
+
+                }
+                }).catch((error) => {
+                    if (error.code === 4001) {
+                    } else {
+                        alert(error.message);
+                        console.error('error-----',error);
+                    }
+                }); 
+            }
+        }   
+        catch(error)
+        {
+            console.log('error:---',error);
+        }
+
+    };
+</script>
+</head>
+<body>
+   
+<div class="sidenav">
+    <button id="b1">connect wallet</button>
+    <button id="cbbtn" data-toggle="collapse" data-target="#demo">Account Balance</button>
+    <div id="demo" class="collapse">
+        <li class="liclass" id="b"></li>
+    </div>
+    <button id="TokenBal" data-toggle="collapse" data-target="#demo1">Remaining token</button>
+        <div id="demo1" class="collapse">
+            <li id="tokenbal" class="liclass"></li>
+        </div>
+    <button id="ui" data-toggle="collapse" data-target="#demo2">Unclaimed Id</button>
+        <div id="demo2" class="collapse">
+            <!-- <li></li>      -->
+        </div>
+  
+  </div>
+  <center>
+  <div class="main">
+    
+    <div id="d1" class="main">
+        <div class="divh1"><h4 style="font-size: 28px;padding: 10px;color: rgb(255, 255, 255);font-weight: bold;">Buy Token</h4></div>
+
+    <form>
+        <br><br>
+        
+        <div class="form-inline">
+            <div class="form-group">
+            
+            <label class="form-label">Account Address:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+              <input type="text" class="form-control" id="add" readonly>
+            </div>
+          </div>
+          <br>
+          
+          <div class="form-inline">
+            <div class="form-group">
+                <label class="form-label">Ethers: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+              <input type="number" class="form-control" id="ta" placeholder="Enter Token to buy">
+            </div>
+          </div>
+          <br>
+          &nbsp;&nbsp;<button type="button" class="btn btn-default" id="buybtn">Buy</button>
+    <br><br>
+      </form>
+      <br>
+      
+      <div class="divh1"><h4 style="font-size: 28px;color: rgb(255, 255, 255);padding: 10px;font-weight: bold;">claim</h4></div>
+      <br><br>
+      <input type="number" class="form-control" id="or" placeholder="Enter order id" style="width:210px;"><br>
+      <button type="button" class="btn btn-default" id="clbtn">Claim</button>
+      
+      <!-- <br><br><br>
+      <div class="divh1"><h4 style="font-size: 28px;color: rgb(255, 255, 255);padding: 10px;font-weight: bold;">Balance</h4></div>
+      <br>
+      <label id="b">Balance</label><br><br>
+      <button type="button" class="btn btn-default" id="cbbtn">Check Balance</button>
+      <br>
+      
+    </div>
+    <div id="d2">
+        
+    
+        <div class="divh1"><h4 style="font-size: 28px;color: rgb(255, 255, 255);padding: 10px;font-weight: bold;">Remaining Tokens</h4></div>
+        <br>
+        <label id="tokenbal">Tokens</label><br><br>
+        <button type="button" class="btn btn-default" id="TokenBal">Check Balance</button>
+        
+    
+    </div>
+    <br>     -->
+   
+      </div>
+    </center>
+              
+</body>
+</html>
